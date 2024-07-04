@@ -9,7 +9,7 @@ const generateToken = (id) => {
 };
 
 const registerUser = async (req, res) => {
-  const { us_name, us_email, us_password, us_phone_number, us_address, us_id } = req.body;
+  const { us_id, us_name, us_email, us_password, us_phone_number, us_address } = req.body;
 
   try {
     const userExists = await User.findOne({ us_email });
@@ -116,11 +116,21 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const getAllUser = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   generateToken,
   findUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getAllUser,
 };

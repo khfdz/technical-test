@@ -4,10 +4,14 @@ import { ProductContext } from "../context/ProductContext";
 const Cart = ({ cart, removeCartItem, decreaseQuantity, increaseQuantity }) => {
   const { products } = useContext(ProductContext);
 
+  if (cart.length === 0) {
+    return <p className="text-xl font-bold mt-4">Cart is Empty</p>;
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold mt-4">Cart Items</h2>
-      <table className="table-auto w-full">
+      <table className="table-auto w-1/2">
         <thead>
           <tr>
             <th className="px-4 py-2">Product Name</th>

@@ -102,7 +102,7 @@ const Product = () => {
         </button>
       </form>
 
-      <table className="table-auto w-full">
+      <table className="table-auto w-1/2 ">
         <thead>
           <tr>
             <th className="px-4 py-2">Name</th>

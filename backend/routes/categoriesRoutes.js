@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/authMiddleWare');
 const { 
-    getAllCategories, 
-    getSingleCategories, 
-    addCategories, 
-    updateCategories, 
-    deleteCategories 
+    getAllCategories,
+    getSingleCategories,
+    addCategories,
+    updateCategories,
+    deleteCategories
 } = require('../controllers/categoriesController');
 
 router.get('/categories', getAllCategories);

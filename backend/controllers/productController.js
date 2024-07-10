@@ -1,13 +1,20 @@
 const Product = require('../models/productModels');
 const Category = require('../models/categoriesModels');
 const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-
 dotenv.config();
 
 const getAllProduct = async (req, res) => {
     try {
-        const products = await Product.find();
+        let products = await Product.find().populate('pd_ct_id', 'ct_id ct_name ct_code');
+        products = products.map(product => {
+            const productObj = product.toObject();
+            productObj.pd_ct_id = {
+                ct_id: product.pd_ct_id.ct_id,
+                ct_name: product.pd_ct_id.ct_name,
+                ct_code: product.pd_ct_id.ct_code,
+            };
+            return productObj;
+        });
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -15,12 +22,18 @@ const getAllProduct = async (req, res) => {
 };
 
 const getSingleProduct = async (req, res) => {
-    const userId = req.params.pd_id;
+    const productId = req.params.pd_id;
     try {
-        const product = await Product.findOne({ pd_id: userId });
+        let product = await Product.findOne({ pd_id: productId }).populate('pd_ct_id', 'ct_id ct_name ct_code');
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
+        product = product.toObject();
+        product.pd_ct_id = {
+            ct_id: product.pd_ct_id.ct_id,
+            ct_name: product.pd_ct_id.ct_name,
+            ct_code: product.pd_ct_id.ct_code,
+        };
         res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -29,7 +42,6 @@ const getSingleProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
     const { pd_name, pd_price, pd_ct_id } = req.body;
-
     try {
         const category = await Category.findOne({ ct_id: pd_ct_id });
         if (!category) {
@@ -39,7 +51,7 @@ const addProduct = async (req, res) => {
         const newProduct = new Product({
             pd_name,
             pd_price,
-            pd_ct_id: category.ct_id,
+            pd_ct_id: category._id,
         });
 
         const product = await newProduct.save();
@@ -49,12 +61,14 @@ const addProduct = async (req, res) => {
     }
 };
 
+
+
 const updateProduct = async (req, res) => {
-    const userId = req.params.pd_id;
-    const { pd_code, pd_name, pd_price, pd_ct_id } = req.body;
+    const productId = req.params.pd_id;
+    const { pd_name, pd_price, pd_ct_id } = req.body;
 
     try {
-        const product = await Product.findOne({ pd_id: userId });
+        let product = await Product.findOne({ pd_id: productId });
 
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
@@ -65,10 +79,9 @@ const updateProduct = async (req, res) => {
             return res.status(400).json({ message: 'Invalid category ID' });
         }
 
-        product.pd_code = pd_code;
-        product.pd_name = pd_name;
-        product.pd_price = pd_price;
-        product.pd_ct_id = category.ct_id; 
+        product.pd_name = pd_name || product.pd_name;
+        product.pd_price = pd_price || product.pd_price;
+        product.pd_ct_id = category._id || product.pd_ct_id;
 
         await product.save();
 
@@ -79,16 +92,16 @@ const updateProduct = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
-    const userId = req.params.pd_id;
+    const productId = req.params.pd_id;
 
     try {
-        const product = await Product.findOne({ pd_id: userId });
+        const product = await Product.findOne({ pd_id: productId });
 
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        await Product.deleteOne({ pd_id: userId });
+        await Product.deleteOne({ pd_id: productId });
 
         res.status(200).json({ message: 'Product DELETED successfully' });
     } catch (error) {

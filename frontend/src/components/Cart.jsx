@@ -1,63 +1,112 @@
-import React, { useContext } from "react";
-import { ProductContext } from "../context/ProductContext";
+import React, { useContext, useState } from "react";
+import { OrderContext } from "../context/OrderContext";
 
-const Cart = ({ cart, removeCartItem, decreaseQuantity, increaseQuantity }) => {
-  const { products } = useContext(ProductContext);
+const Cart = ({ cart, setCart, removeCartItem, decreaseQuantity, increaseQuantity, formatCurrency }) => {
+  const { addOrder } = useContext(OrderContext);
+  const [showMessage, setShowMessage] = useState(false);
+  const handleAddOrder = async (e) => {
+    e.preventDefault();
+  
+    if (cart.length === 0) {
+      alert("Cart is empty");
+      return;
+    }
+  
+    const orderProducts = cart.map(item => ({
+      or_pd_id: item.or_pd_id,
+      or_amount: item.or_amount
+    }));
+  
+    const orderData = { order_products: orderProducts };
+  
+    try {
+      const result = await addOrder(orderData);
+  
+      if (result) {
+        setShowMessage(true); 
+        setCart([]);
+        alert("Thank you for your order!");
+        clearCart();
+      } else {
+        alert("Thank you for your order!"); 
+        clearCart();
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("An error occurred while placing your order. Please try again later."); 
+    }
+  };
+  
 
-  if (cart.length === 0) {
-    return <p className="text-xl font-bold mt-4">Cart is Empty</p>;
-  }
+  const closeMessage = () => {
+    setShowMessage(false);
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mt-4">Cart Items</h2>
-      <table className="table-auto w-1/2">
+    <div className="mt-4">
+      <p className="text-xl font-bold">Cart</p>
+      <table className="table-auto w-full mt-4">
         <thead>
           <tr>
-            <th className="px-4 py-2">Product Name</th>
-            <th className="px-4 py-2">Price</th>
-            <th className="px-4 py-2">Quantity</th>
-            <th className="px-4 py-2">Actions</th>
+            <th className="px-4 py-2 text-center">No</th>
+            <th className="px-4 py-2 text-center">Product Name</th>
+            <th className="px-4 py-2 text-center">Price</th>
+            <th className="px-4 py-2 text-center">Quantity</th>
+            <th className="px-4 py-2 text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {cart.map((item, index) => (
-            <tr key={index}>
-              <td className="border px-4 py-2 text-center">{products.find((product) => product.pd_id === item.or_pd_id)?.pd_name}</td>
-              <td className="border px-4 py-2 text-center">{products.find((product) => product.pd_id === item.or_pd_id)?.pd_price}</td>
-              <td className="border px-4 py-2">
-                <div className="flex items-center justify-center space-x-2">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                    onClick={() => decreaseQuantity(item.or_pd_id)}
-                  >
-                    -
-                  </button>
-                  <span>{item.or_amount}</span>
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                    onClick={() => increaseQuantity(item.or_pd_id)}
-                  >
-                    +
-                  </button>
+            <tr key={item.or_pd_id}>
+              <td className="border px-4 py-2 text-center">{index + 1}</td>
+              <td className="border px-4 py-2 text-center">{item.or_name}</td>
+              <td className="border px-4 py-2 text-center">{formatCurrency(item.or_price)}</td>
+              <td className="border px-4 py-2 text-center">
+                <div className="flex items-center justify-center space-x-4">
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" onClick={() => decreaseQuantity(item.or_pd_id)}>-</button>
+                  <span className="px-2">{item.or_amount}</span>
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" onClick={() => increaseQuantity(item.or_pd_id)}>+</button>
                 </div>
               </td>
-              <td className="flex items-center justify-center border px-4 py-2">
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => removeCartItem(item.or_pd_id)}
-                >
-                  Remove
-                </button>
+              <td className="border px-4 py-2 text-center">
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onClick={() => removeCartItem(item.or_pd_id)}>Remove</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <p className="mt-4">Cart Total: {cart.reduce((total, item) => total + item.or_amount, 0)}</p>
-      <p className="mt-4">Sub Total: {cart.reduce((total, item) => total + item.or_amount * products.find((product) => product.pd_id === item.or_pd_id)?.pd_price, 0)}</p>
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Order</button>
+      <p className="text-xl font-bold mt-4">Total: {formatCurrency(cart.reduce((total, item) => total + item.or_price * item.or_amount, 0))}</p>
+
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={handleAddOrder}
+          className={`py-2 px-4 rounded ${cart.length === 0 ? 'bg-red-500 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold`}
+        >
+          Checkout
+        </button>
+        {cart.length > 0 && (
+          <button
+            onClick={clearCart}
+            className="py-2 px-4 rounded bg-gray-500 hover:bg-gray-700 text-white font-bold"
+          >
+            Clear Cart
+          </button>
+        )}
+      </div>
+
+      {showMessage && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded shadow-lg text-center">
+            <p className="text-xl font-bold">Thanks for your order!</p>
+            <button onClick={closeMessage} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

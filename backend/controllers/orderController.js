@@ -110,10 +110,10 @@ const getAllOrder = async (req, res) => {
     try {
         const orders = await Order.find().populate({
             path: 'or_pd_id.pd_id',
-            select: '-_id pd_id pd_code pd_ct_id pd_name pd_price pd_created_at pd_updated_at',
+            select: 'pd_id pd_code pd_ct_id pd_name pd_price',
             populate: {
                 path: 'pd_ct_id',
-                select: '-_id ct_id ct_name ct_code'
+                select: 'ct_id ct_name ct_code'
             }
         });
         res.status(200).json(orders);
@@ -127,10 +127,10 @@ const getSingleOrder = async (req, res) => {
     try {
         const order = await Order.findOne({ or_id: orderId }).populate({
             path: 'or_pd_id.pd_id',
-            select: '-_id pd_id pd_code pd_ct_id pd_name pd_price pd_created_at pd_updated_at',
+            select: 'pd_id pd_code pd_ct_id pd_name pd_price',
             populate: {
                 path: 'pd_ct_id',
-                select: '-_id ct_id ct_name ct_code'
+                select: 'ct_id ct_name ct_code'
             }
         });
         if (!order) {
@@ -143,17 +143,17 @@ const getSingleOrder = async (req, res) => {
 };
 
 const addOrder = async (req, res) => {
-    const { or_pd_id } = req.body;
+    const { order_products } = req.body;
     try {
         const products = await Product.find({
-            pd_id: { $in: or_pd_id.map(item => item.pd_id) }
+            pd_id: { $in: order_products.map(item => item.or_pd_id) }
         });
-        if (products.length !== or_pd_id.length) {
+        if (products.length !== order_products.length) {
             return res.status(400).json({ message: 'One or more invalid product IDs' });
         }
 
-        const orderItems = or_pd_id.map(item => ({
-            pd_id: products.find(product => product.pd_id === item.pd_id)._id,
+        const orderItems = order_products.map(item => ({
+            pd_id: products.find(product => product.pd_id === item.or_pd_id)._id,
             or_amount: item.or_amount
         }));
 
@@ -170,7 +170,7 @@ const addOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
     const orderId = req.params.or_id;
-    const { or_pd_id } = req.body;
+    const { order_products } = req.body;
 
     try {
         const order = await Order.findOne({ or_id: orderId });
@@ -179,14 +179,14 @@ const updateOrder = async (req, res) => {
         }
 
         const products = await Product.find({
-            pd_id: { $in: or_pd_id.map(item => item.pd_id) }
+            pd_id: { $in: order_products.map(item => item.or_pd_id) }
         });
-        if (products.length !== or_pd_id.length) {
+        if (products.length !== order_products.length) {
             return res.status(400).json({ message: 'One or more invalid product IDs' });
         }
 
-        const orderItems = or_pd_id.map(item => ({
-            pd_id: products.find(product => product.pd_id === item.pd_id)._id,
+        const orderItems = order_products.map(item => ({
+            pd_id: products.find(product => product.pd_id === item.or_pd_id)._id,
             or_amount: item.or_amount
         }));
 

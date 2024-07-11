@@ -141,8 +141,6 @@ orderSchema.pre('save', async function(next) {
             const nextOrId = lastOrder ? lastOrder.or_id + 1 : 1;
             this.or_id = nextOrId;
 
-            this.or_code = `OR${nextOrId.toString().padStart(4, '0')}`;
-
             next();
         } catch (error) {
             next(error);

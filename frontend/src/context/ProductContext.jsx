@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { AuthContext } from "../context/Auth"; // Import AuthContext untuk mendapatkan token
+import { AuthContext } from "../context/Auth"; 
 
 export const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
-    const { token } = useContext(AuthContext); // Mendapatkan token dari AuthContext
+    const { token } = useContext(AuthContext); 
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -53,6 +53,7 @@ export const ProductProvider = ({ children }) => {
             }
             const data = await response.json();
             setProducts((prevProducts) => [...prevProducts, data]);
+            getProducts();
             console.log("Data Add: ", data);
         } catch (error) {
             console.error("Failed to add product:", error);
@@ -104,6 +105,7 @@ export const ProductProvider = ({ children }) => {
         <ProductContext.Provider
             value={{
                 products,
+                token,
                 getProducts,
                 getSingleProduct,
                 addProduct,

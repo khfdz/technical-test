@@ -11,25 +11,15 @@ import './index.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <AuthProvider>
-                
-
-        <CategoriesProvider>
-
         <ProductProvider>
-
-
+        <CategoriesProvider>
         <OrderProvider>
-
         <Router>
             <App />
         </Router>
-
         </OrderProvider>
-        </ProductProvider>
-        
         </CategoriesProvider>
-        
-
+        </ProductProvider>
         </AuthProvider>
     </React.StrictMode>
 );

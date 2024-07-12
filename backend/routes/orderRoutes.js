@@ -9,7 +9,7 @@ const {
     deleteOrder 
 } = require('../controllers/orderController');
 
-router.get('/orders', getAllOrder);
+router.get('/orders',protect, getAllOrder);
 router.get('/orders/:or_id', getSingleOrder);
 router.post('/orders', protect, addOrder);
 router.put('/orders/:or_id', protect, updateOrder);

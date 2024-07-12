@@ -1,0 +1,75 @@
+[{
+  "_id": {
+    "$oid": "668eb92432f1999a870f8457"
+  },
+  "ct_name": "Fiction",
+  "ct_created_at": {
+    "$date": "2024-07-10T16:39:00.256Z"
+  },
+  "ct_updated_at": {
+    "$date": "2024-07-10T16:39:00.256Z"
+  },
+  "ct_id": 1,
+  "__v": 0,
+  "ct_code": "CT01"
+},
+{
+  "_id": {
+    "$oid": "668ec46532f1999a870f849e"
+  },
+  "ct_name": "Non-fiction",
+  "ct_created_at": {
+    "$date": "2024-07-10T17:27:01.010Z"
+  },
+  "ct_updated_at": {
+    "$date": "2024-07-10T17:27:01.010Z"
+  },
+  "ct_id": 2,
+  "ct_code": "CT02",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "668ec47132f1999a870f84a4"
+  },
+  "ct_name": "Science Fiction",
+  "ct_created_at": {
+    "$date": "2024-07-10T17:27:13.024Z"
+  },
+  "ct_updated_at": {
+    "$date": "2024-07-10T17:27:13.024Z"
+  },
+  "ct_id": 3,
+  "ct_code": "CT03",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "668ec47432f1999a870f84aa"
+  },
+  "ct_name": "Fantasy",
+  "ct_created_at": {
+    "$date": "2024-07-10T17:27:16.453Z"
+  },
+  "ct_updated_at": {
+    "$date": "2024-07-10T17:27:16.453Z"
+  },
+  "ct_id": 4,
+  "ct_code": "CT04",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "668ec47732f1999a870f84b0"
+  },
+  "ct_name": "Mystery",
+  "ct_created_at": {
+    "$date": "2024-07-10T17:27:19.931Z"
+  },
+  "ct_updated_at": {
+    "$date": "2024-07-10T17:27:19.931Z"
+  },
+  "ct_id": 5,
+  "ct_code": "CT05",
+  "__v": 0
+}]

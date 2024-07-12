@@ -9,7 +9,7 @@ export const OrderProvider = ({ children }) => {
 
     useEffect(() => {
         getAllOrders();
-    }, []);
+    }, [token]);
 
     const getAllOrders = async () => {
         try {
@@ -78,15 +78,24 @@ export const OrderProvider = ({ children }) => {
                 method: "PUT",
                 body: JSON.stringify(order),
             });
+    
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message || 'Unknown error'}`);
             }
+    
             const data = await response.json();
-            setOrders((prevOrders) => prevOrders.map((order) => (order.or_id === id ? data : order)));
+            setOrders((prevOrders) =>
+                prevOrders.map((o) => (o.or_id === id ? data : o))
+            );
+            getAllOrders();
         } catch (error) {
             console.error("Failed to edit order:", error);
+            alert(`Failed to edit order: ${error.message}`);
         }
     };
+    
+    
 
     const deleteOrder = async (id) => {
         try {

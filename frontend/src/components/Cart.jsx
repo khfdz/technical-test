@@ -2,30 +2,36 @@ import React, { useContext, useState } from "react";
 import { OrderContext } from "../context/OrderContext";
 
 const Cart = ({ cart, setCart, removeCartItem, decreaseQuantity, increaseQuantity, formatCurrency }) => {
-  const { addOrder } = useContext(OrderContext);
+  const { addOrder, token } = useContext(OrderContext);
   const [showMessage, setShowMessage] = useState(false);
+
   const handleAddOrder = async (e) => {
     e.preventDefault();
-  
+
+    if (!token) {
+      alert("You are not logged in");
+      return;
+    }
+
     if (cart.length === 0) {
       alert("Cart is empty");
       return;
     }
-  
+
     const orderProducts = cart.map(item => ({
       or_pd_id: item.or_pd_id,
       or_amount: item.or_amount
     }));
-  
+
     const orderData = { order_products: orderProducts };
-  
+
     try {
       const result = await addOrder(orderData);
-  
+
       if (result) {
         setShowMessage(true); 
         setCart([]);
-        alert("Thank you for your order!");
+        alert("Your order will be processed soon!");
         clearCart();
       } else {
         alert("Thank you for your order!"); 
@@ -36,7 +42,6 @@ const Cart = ({ cart, setCart, removeCartItem, decreaseQuantity, increaseQuantit
       alert("An error occurred while placing your order. Please try again later."); 
     }
   };
-  
 
   const closeMessage = () => {
     setShowMessage(false);
@@ -85,28 +90,21 @@ const Cart = ({ cart, setCart, removeCartItem, decreaseQuantity, increaseQuantit
       <div className="flex justify-between mt-4">
         <button
           onClick={handleAddOrder}
-          className={`py-2 px-4 rounded ${cart.length === 0 ? 'bg-red-500 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold`}
+          className={`py-2 px-4 rounded ${cart.length === 0 || !token ? 'bg-red-500 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold`}
         >
           Checkout
         </button>
         {cart.length > 0 && (
           <button
             onClick={clearCart}
-            className="py-2 px-4 rounded bg-gray-500 hover:bg-gray-700 text-white font-bold"
+            className="py-2 px-4 rounded bg-red-500 hover:bg-red-700 text-white font-bold"
           >
             Clear Cart
           </button>
         )}
       </div>
 
-      {showMessage && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded shadow-lg text-center">
-            <p className="text-xl font-bold">Thanks for your order!</p>
-            <button onClick={closeMessage} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };

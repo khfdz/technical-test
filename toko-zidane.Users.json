@@ -1,0 +1,54 @@
+[{
+  "_id": {
+    "$oid": "6690e4d889f009253c0c4b21"
+  },
+  "us_id": 2,
+  "us_name": "Dhika Hafidz",
+  "us_password": "$2a$10$W3nNAt6ygfGgF2KQLyAA3.fC/EgWGaoHXtxRspyJythU4KWuLV3HK",
+  "us_email": "khfdz@gmail.com",
+  "us_phone_number": "08226042399723",
+  "us_address": "Karawang",
+  "us_created_at": {
+    "$date": "2024-07-12T08:10:00.690Z"
+  },
+  "us_updated_at": {
+    "$date": "2024-07-12T08:10:00.690Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6690fd2d89f009253c0c50a8"
+  },
+  "us_id": 4,
+  "us_name": "Silvya Budiharti",
+  "us_password": "$2a$10$7cX2yft/OxVwLliahQBYqeGByBUMhSWV2Adg4SBcdUN5ehXRHiZqq",
+  "us_email": "silvya@gmail.com",
+  "us_phone_number": "082260423994",
+  "us_address": "Bandung",
+  "us_created_at": {
+    "$date": "2024-07-12T09:53:49.296Z"
+  },
+  "us_updated_at": {
+    "$date": "2024-07-12T09:53:49.296Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66919212a650b3eeefba8de4"
+  },
+  "us_id": 5,
+  "us_name": "Dhika Hafidz",
+  "us_password": "$2a$10$Vzr8WfZGIRH7kBX4rHNuH./uFgbeZFq6ER3wuvyzJ6E1mrCIFejGK",
+  "us_email": "khfdz123@gmail.com",
+  "us_phone_number": "085772152917",
+  "us_address": "123 Main St",
+  "us_created_at": {
+    "$date": "2024-07-12T20:29:06.431Z"
+  },
+  "us_updated_at": {
+    "$date": "2024-07-12T20:29:06.432Z"
+  },
+  "__v": 0
+}]

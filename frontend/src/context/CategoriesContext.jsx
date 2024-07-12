@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/Auth";
+import { ProductContext } from "../context/ProductContext";
 
 export const CategoriesContext = createContext();
 
 export const CategoriesProvider = ({ children }) => {
     const { token } = useContext(AuthContext); 
+    const { getProducts } = useContext(ProductContext);
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -74,6 +76,8 @@ export const CategoriesProvider = ({ children }) => {
             }
             const data = await response.json();
             setCategories((prevCategories) => prevCategories.map((c) => (c.ct_id === id ? data : c)));
+            getCategories();
+            getProducts();
             console.log("Data Edit: ", data);
         } catch (error) {
             console.error("Failed to edit category:", error);

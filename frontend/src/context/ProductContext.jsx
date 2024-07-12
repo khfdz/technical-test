@@ -76,6 +76,7 @@ export const ProductProvider = ({ children }) => {
             const data = await response.json();
             console.log("Data Edit: ", data);
             setProducts((prevProducts) => prevProducts.map((p) => (p.pd_id === id ? data : p)));
+            getProducts();
         } catch (error) {
             console.error("Failed to edit product:", error);
         }

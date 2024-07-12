@@ -16,6 +16,7 @@ const Profile = () => {
 
     const handleLogout = () => {
         logoutUser(); 
+        alert("Logout successfully!");
     };
 
     if (isLoading) {

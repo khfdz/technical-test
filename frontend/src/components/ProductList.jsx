@@ -8,6 +8,7 @@ const ProductList = ({ addToCart, formatCurrency }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [editProductId, setEditProductId] = useState(null);
+  const [editedProduct, setEditedProduct] = useState({ pd_name: "", pd_price: "", pd_ct_id: "" });
   const itemsPerPage = 20;
 
   const handleDeleteProduct = async (productId) => {
@@ -33,7 +34,7 @@ const ProductList = ({ addToCart, formatCurrency }) => {
     setEditProductId(null); // Reset edit mode when category changes
   };
 
-  const filteredProducts = selectedCategory === "All" ? products : products.filter(product => product.pd_ct_id.ct_id === selectedCategory);
+  const filteredProducts = selectedCategory === "All" ? products : products.filter(product => product.pd_ct_id && product.pd_ct_id.ct_id === selectedCategory);
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const displayedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -42,23 +43,16 @@ const ProductList = ({ addToCart, formatCurrency }) => {
     setEditProductId(null); // Reset edit mode when page changes
   };
 
-  const handleEditProduct = async (productId) => {
-    try {
-      if (!token) {
-        throw new Error("You are not logged in");
-      }
-      if (!editProduct) {
-        throw new Error("Edit product function is not available.");
-      }
-
-      // Perform edit product action here, e.g., show form or perform API call
-      setEditProductId(productId);
-    } catch (error) {
-      alert(`Failed to edit product: ${error.message}`);
+  const handleEditProduct = (product) => {
+    if (!token) {
+      alert("You are not logged in");
+      return;
     }
+    setEditProductId(product.pd_id);
+    setEditedProduct({ pd_name: product.pd_name, pd_price: product.pd_price, pd_ct_id: product.pd_ct_id ? product.pd_ct_id.ct_id : "" });
   };
 
-  const saveEditedProduct = async (editedProduct) => {
+  const saveEditedProduct = async () => {
     try {
       if (!token) {
         throw new Error("You are not logged in");
@@ -67,12 +61,22 @@ const ProductList = ({ addToCart, formatCurrency }) => {
         throw new Error("Edit product function is not available.");
       }
 
-      await editProduct(editedProduct);
+      await editProduct(editProductId, editedProduct);
       setEditProductId(null);
       alert("Product edited successfully!");
     } catch (error) {
       alert(`Failed to edit product: ${error.message}`);
     }
+  };
+
+  const cancelEdit = () => {
+    setEditProductId(null);
+    setEditedProduct({ pd_name: "", pd_price: "", pd_ct_id: "" });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
   };
 
   return (
@@ -103,7 +107,7 @@ const ProductList = ({ addToCart, formatCurrency }) => {
               <tr>
                 <td className="border px-4 py-2 text-center w-8">{product.pd_id}</td>
                 <td className="border px-4 py-2 text-center">{product.pd_code}</td>
-                <td className="border px-4 py-2 text-center">{product.pd_ct_id.ct_name}</td>
+                <td className="border px-4 py-2 text-center">{product.pd_ct_id ? product.pd_ct_id.ct_name : "No Category"}</td>
                 <td className="border px-4 py-2 text-center">{product.pd_name}</td>
                 <td className="border px-4 py-2 text-center">{formatCurrency(product.pd_price)}</td>
                 <td className="border px-4 py-2 flex justify-center space-x-4">
@@ -115,7 +119,7 @@ const ProductList = ({ addToCart, formatCurrency }) => {
                   </button>
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleEditProduct(product.pd_id)}
+                    onClick={() => handleEditProduct(product)}
                   >
                     Edit
                   </button>
@@ -130,16 +134,48 @@ const ProductList = ({ addToCart, formatCurrency }) => {
               {/* Display edit form below the selected product row */}
               {editProductId === product.pd_id && (
                 <tr>
-                  <td colSpan="6" className="border px-4 py-2">
+                  <td colSpan="6" className="border px-4 py-2 space-x-2">
                     {/* Your edit form goes here */}
                     <p>Edit form for product ID: {product.pd_id}</p>
                     {/* Example of form inputs */}
-                    <input type="text" defaultValue={product.pd_name} className="border px-4 py-2 mr-2" />
-                    <input type="number" defaultValue={product.pd_price} className="border px-4 py-2 mr-2" />
-                    <button 
-                    onClick={() => saveEditedProduct({ pd_id: product.pd_id, pd_name: product.pd_name, pd_price: product.pd_price })}
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                      Save Changes
+                    <input
+                      type="text"
+                      name="pd_name"
+                      value={editedProduct.pd_name}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 mr-2"
+                    />
+                    <input
+                      type="number"
+                      name="pd_price"
+                      value={editedProduct.pd_price}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 mr-2"
+                    />
+                    <select
+                      name="pd_ct_id"
+                      value={editedProduct.pd_ct_id}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 mr-2 mt-2 mb-4"
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map((category) => (
+                        <option key={category.ct_id} value={category.ct_id}>
+                          {category.ct_name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={saveEditedProduct}
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Cancel
                     </button>
                   </td>
                 </tr>
